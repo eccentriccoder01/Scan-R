@@ -28,7 +28,7 @@ Scan-R is a user-friendly web application that allows you to effortlessly genera
 
 ## 🚀 Live Demo
 
-Experience Scan-R live here: [**SCAN-R**](https://www.google.com/search?q=https://eccentricexplorer.github.io/Scan-R)
+Experience Scan-R live here: [**SCAN-R**](https://www.google.com/search?q=https://eccentriccoder01.github.io/Scan-R)
 
 *Please note: Due to browser security restrictions, the camera scanning feature and certain share functionalities work only on a live server (like the hosted demo) or when served locally via a tool like Live Server in VS Code.*
 
@@ -82,7 +82,7 @@ For a detailed walkthrough of Scan-R's features and how to use them, check out t
 1.  **Clone the repository:**
 
     ```bash
-    git clone https://github.com/EccentricExplorer/Scan-R.git
+    git clone https://github.com/eccentriccoder01/Scan-R.git
     ```
 
 2.  **Navigate to the project directory:**
