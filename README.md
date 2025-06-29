@@ -1,4 +1,4 @@
-<div align="center"><img src="Scan-RLogo.png" style="width: 180px; height: 180px;" /></div>
+<div align="center"><img src="Scan-RLogo.png" style="width: 220px; height: 220px;" /></div>
 
 # <div align="center">SCAN-R - QR GENERATOR PRO</div>
 
