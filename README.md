@@ -1,6 +1,6 @@
 <div align="center"><img src="Scan-RLogo.png" style="width: 220px; height: 220px;" /></div>
 
-# <div align="center">SCAN-R - QR GENERATOR PRO</div>
+# <div align="center">SCAN-R : QR GENERATOR PRO</div>
 
 ## A modern, feature-rich JavaScript-based QR code generator and scanner
 
