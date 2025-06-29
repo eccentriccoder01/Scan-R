@@ -1,4 +1,3 @@
-// QR Code Generator Pro - JavaScript
 class QRGenerator {
     constructor() {
         this.init();
@@ -38,7 +37,6 @@ class QRGenerator {
         this.currentCanvas = null;
         this.cameraScanner = null;
         
-        // Initialize character counter
         this.updateCharCount();
     }
 
@@ -70,19 +68,15 @@ class QRGenerator {
         this.elements.uploadArea.addEventListener('dragover', (e) => this.handleDragOver(e));
         this.elements.uploadArea.addEventListener('dragleave', (e) => this.handleDragLeave(e));
         this.elements.uploadArea.addEventListener('drop', (e) => this.handleDrop(e));
-this.elements.uploadArea.addEventListener('click', (e) => {
-    e.stopPropagation();
-    this.toggleUploadMenu(); // New method to toggle menu visibility
-});
-
-this.elements.cameraOption.addEventListener('click', () => {
-    this.startCameraScan();
-});
-
-this.elements.uploadOption.addEventListener('click', () => {
-    this.elements.qrUpload.click();
-});
-
+        
+        this.elements.uploadArea.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.toggleUploadMenu();
+        });
+        this.elements.cameraOption.addEventListener('click', () => {
+            this.startCameraScan();
+        });
+        this.elements.uploadOption.addEventListener('click', () => { this.elements.qrUpload.click(); } );
 
         // Template buttons
         document.querySelectorAll('.template-btn').forEach(btn => {
@@ -119,7 +113,6 @@ this.elements.uploadOption.addEventListener('click', () => {
         const count = this.elements.qrText.value.length;
         this.elements.charCount.textContent = count;
         
-        // Color coding for character count
         if (count > 800) {
             this.elements.charCount.style.color = '#ef4444';
         } else if (count > 600) {
@@ -139,15 +132,10 @@ this.elements.uploadOption.addEventListener('click', () => {
         this.setLoadingState(true);
 
         try {
-            // Clear previous QR code
             this.elements.qrResult.innerHTML = '';
-
-            // Create QR code using qrcode-generator library
             const qr = qrcode(0, this.elements.errorLevel.value);
             qr.addData(text);
             qr.make();
-
-            // Create canvas
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             const size = parseInt(this.elements.size.value);
@@ -157,7 +145,6 @@ this.elements.uploadOption.addEventListener('click', () => {
             canvas.width = size;
             canvas.height = size;
 
-            // Draw QR code
             ctx.fillStyle = this.elements.bgColor.value;
             ctx.fillRect(0, 0, size, size);
             ctx.fillStyle = this.elements.fgColor.value;
@@ -173,7 +160,6 @@ this.elements.uploadOption.addEventListener('click', () => {
             this.currentCanvas = canvas;
             this.currentQRCode = text;
 
-            // Add to DOM with animation
             canvas.style.opacity = '0';
             canvas.style.transform = 'scale(0.8)';
             this.elements.qrResult.appendChild(canvas);
@@ -184,7 +170,6 @@ this.elements.uploadOption.addEventListener('click', () => {
                 canvas.style.transform = 'scale(1)';
             }, 50);
 
-            // Show action buttons
             this.elements.qrActions.style.display = 'flex';
             this.elements.qrActions.style.opacity = '0';
             setTimeout(() => {
@@ -227,12 +212,10 @@ this.elements.uploadOption.addEventListener('click', () => {
         if (!this.currentCanvas) return;
 
         try {
-            // Create download link
             const link = document.createElement('a');
             link.download = `qrcode-${Date.now()}.png`;
             link.href = this.currentCanvas.toDataURL('image/png', 1.0);
             
-            // Trigger download
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -247,7 +230,6 @@ this.elements.uploadOption.addEventListener('click', () => {
         if (!this.currentCanvas) return;
 
         try {
-            // Convert canvas to blob
             this.currentCanvas.toBlob(async (blob) => {
                 try {
                     await navigator.clipboard.write([
@@ -255,7 +237,6 @@ this.elements.uploadOption.addEventListener('click', () => {
                     ]);
                     this.showNotification('QR code copied to clipboard!', 'success');
                 } catch (error) {
-                    // Fallback: copy as data URL
                     const dataUrl = this.currentCanvas.toDataURL();
                     await navigator.clipboard.writeText(dataUrl);
                     this.showNotification('QR code data copied to clipboard!', 'success');
@@ -268,21 +249,16 @@ this.elements.uploadOption.addEventListener('click', () => {
 
     async shareQR() {
         if (!this.currentCanvas) return;
-
         try {
             this.currentCanvas.toBlob(async (blob) => {
                 const file = new File([blob], 'qrcode.png', { type: 'image/png' });
-                
                 if (navigator.share && navigator.canShare({ files: [file] })) {
                     await navigator.share({
                         title: 'QR Code',
                         text: 'Check out this QR code!',
                         files: [file]
                     });
-                } else {
-                    // Fallback: download
-                    this.downloadQR();
-                }
+                } else this.downloadQR();
             }, 'image/png', 1.0);
         } catch (error) {
             this.showNotification('Error sharing QR code', 'error');
@@ -290,7 +266,6 @@ this.elements.uploadOption.addEventListener('click', () => {
     }
 
     setupTheme() {
-        // Check for saved theme or default to light
         const savedTheme = localStorage.getItem('qr-theme') || 'light';
         this.setTheme(savedTheme);
     }
@@ -303,15 +278,9 @@ this.elements.uploadOption.addEventListener('click', () => {
 
     setTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
-        
-        // Update theme button icon
         const icon = this.elements.themeBtn.querySelector('i');
         icon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
-        
-        // Save theme preference
         localStorage.setItem('qr-theme', theme);
-        
-        // Add theme transition effect
         document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
         setTimeout(() => {
             document.body.style.transition = '';
@@ -319,23 +288,16 @@ this.elements.uploadOption.addEventListener('click', () => {
     }
 
     setupModals() {
-        // Get all modals
         const modals = document.querySelectorAll('.modal');
-        
-        // Close modal when clicking outside or on close button
         modals.forEach(modal => {
             const closeBtn = modal.querySelector('.close');
-            
             closeBtn.addEventListener('click', () => this.closeModal(modal));
-            
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) {
                     this.closeModal(modal);
                 }
             });
         });
-
-        // Setup specific modal handlers
         this.setupWiFiModal();
         this.setupEmailModal();
     }
@@ -428,11 +390,8 @@ this.elements.uploadOption.addEventListener('click', () => {
     }
 
     showNotification(message, type = 'info') {
-        // Remove existing notifications
         const existingNotifications = document.querySelectorAll('.notification');
         existingNotifications.forEach(n => n.remove());
-
-        // Create notification element
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
         notification.innerHTML = `
@@ -441,8 +400,6 @@ this.elements.uploadOption.addEventListener('click', () => {
                 <span>${message}</span>
             </div>
         `;
-
-        // Style the notification
         Object.assign(notification.style, {
             position: 'fixed',
             top: '20px',
@@ -459,8 +416,6 @@ this.elements.uploadOption.addEventListener('click', () => {
             backdropFilter: 'blur(10px)',
             border: '1px solid rgba(255,255,255,0.2)'
         });
-
-        // Set background based on type
         const backgrounds = {
             success: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
             error: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%)',
@@ -468,16 +423,10 @@ this.elements.uploadOption.addEventListener('click', () => {
             info: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
         };
         notification.style.background = backgrounds[type];
-
-        // Add to DOM
         document.body.appendChild(notification);
-
-        // Animate in
         setTimeout(() => {
             notification.style.transform = 'translateX(0)';
         }, 100);
-
-        // Auto remove after 4 seconds
         setTimeout(() => {
             notification.style.transform = 'translateX(100%)';
             setTimeout(() => {
@@ -498,174 +447,153 @@ this.elements.uploadOption.addEventListener('click', () => {
         return icons[type] || icons.info;
     }
 
-handleFileUpload(event) {
-    const file = event.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-        this.processQRImage(file);
+    handleFileUpload(event) {
+        const file = event.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            this.processQRImage(file);
+        }
     }
-}
 
-handleDragOver(event) {
-    event.preventDefault();
-    this.elements.uploadArea.classList.add('dragover');
-}
-
-handleDragLeave(event) {
-    event.preventDefault();
-    this.elements.uploadArea.classList.remove('dragover');
-}
-
-handleDrop(event) {
-    event.preventDefault();
-    this.elements.uploadArea.classList.remove('dragover');
-    const files = event.dataTransfer.files;
-    if (files.length > 0 && files[0].type.startsWith('image/')) {
-        this.processQRImage(files[0]);
+    handleDragOver(event) {
+        event.preventDefault();
+        this.elements.uploadArea.classList.add('dragover');
     }
-}
 
-async processQRImage(file) {
-    try {
-        const reader = new FileReader();
-
-        reader.onload = async (e) => {
-            const img = new Image();
-            img.src = e.target.result;
-
-            // Wait for image to fully load
-            await new Promise((resolve, reject) => {
-                img.onload = () => resolve();
-                img.onerror = () => reject('Image load error');
-            });
-
-            // Show preview
-            this.elements.previewImage.src = img.src;
-            this.elements.uploadPreview.style.display = 'block';
-            this.elements.uploadArea.querySelector('.upload-content').style.display = 'none';
-
-            // ✅ Draw image to canvas
-            const canvas = document.createElement('canvas');
-            canvas.width = img.naturalWidth;
-            canvas.height = img.naturalHeight;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0);
-
-            // Decode from canvas
-            this.showNotification('Decoding QR code...', 'info');
-            const result = await QrScanner.scanImage(canvas, {
-                returnDetailedScanResult: true
-            });
-
-            if (result && result.data) {
-                this.displayDecodedResult(result.data);
-                this.showNotification('QR code decoded successfully!', 'success');
-            } else {
-                throw new Error('No QR code found');
-            }
-        };
-
-        reader.readAsDataURL(file);
-    } catch (error) {
-        console.error('Error decoding QR:', error);
-        this.showNotification('Could not decode QR code. Please try a clearer image.', 'error');
-        this.clearUpload();
+    handleDragLeave(event) {
+        event.preventDefault();
+        this.elements.uploadArea.classList.remove('dragover');
     }
-}
 
-displayDecodedResult(decodedText) {
-    this.elements.decodedText.textContent = decodedText.data || decodedText;
-    this.elements.decodeResult.style.display = 'block';
-    this.currentDecodedText = decodedText;
+    handleDrop(event) {
+        event.preventDefault();
+        this.elements.uploadArea.classList.remove('dragover');
+        const files = event.dataTransfer.files;
+        if (files.length > 0 && files[0].type.startsWith('image/')) {
+            this.processQRImage(files[0]);
+        }
+    }
 
-    // Animate the result
-    this.elements.decodeResult.style.opacity = '0';
-    this.elements.decodeResult.style.transform = 'translateY(20px)';
-    setTimeout(() => {
-        this.elements.decodeResult.style.transition = 'all 0.3s ease';
-        this.elements.decodeResult.style.opacity = '1';
-        this.elements.decodeResult.style.transform = 'translateY(0)';
-    }, 100);
-}
-
-clearUpload() {
-    this.elements.qrUpload.value = '';
-    this.elements.uploadPreview.style.display = 'none';
-    this.elements.uploadArea.querySelector('.upload-content').style.display = 'block';
-    this.elements.decodeResult.style.display = 'none';
-    this.currentDecodedText = null;
-}
-
-async copyDecodedText() {
-    if (this.currentDecodedText) {
+    async processQRImage(file) {
         try {
-            await navigator.clipboard.writeText(this.currentDecodedText);
-            this.showNotification('Decoded text copied to clipboard!', 'success');
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const img = new Image();
+                img.src = e.target.result;
+                await new Promise((resolve, reject) => {
+                    img.onload = () => resolve();
+                    img.onerror = () => reject('Image load error');
+                });
+                this.elements.previewImage.src = img.src;
+                this.elements.uploadPreview.style.display = 'block';
+                this.elements.uploadArea.querySelector('.upload-content').style.display = 'none';
+                const canvas = document.createElement('canvas');
+                canvas.width = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                this.showNotification('Decoding QR code...', 'info');
+                const result = await QrScanner.scanImage(canvas, {
+                    returnDetailedScanResult: true
+                });
+
+                if (result && result.data) {
+                    this.displayDecodedResult(result.data);
+                    this.showNotification('QR code decoded successfully!', 'success');
+                } else {
+                    throw new Error('No QR code found');
+                }
+            };
+
+            reader.readAsDataURL(file);
         } catch (error) {
-            this.showNotification('Error copying text', 'error');
+            console.error('Error decoding QR:', error);
+            this.showNotification('Could not decode QR code. Please try a clearer image.', 'error');
+            this.clearUpload();
         }
     }
-}
 
-useDecodedText() {
-    if (this.currentDecodedText) {
-        this.elements.qrText.value = this.currentDecodedText;
-        this.updateCharCount();
-        this.generateQR();
-        this.showNotification('Text loaded into generator!', 'success');
-
-        // Scroll to generator section
-        this.elements.qrText.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-}
-
-toggleUploadMenu() {
-    const menu = document.getElementById('uploadMenu');
-    const isVisible = menu.style.display === 'block';
-    menu.style.display = isVisible ? 'none' : 'block';
-
-    // Close it if clicked outside
-    document.addEventListener('click', () => {
-        menu.style.display = 'none';
-    }, { once: true });
-}
-
-async startCameraScan() {
-    const video = document.getElementById('qrVideo');
-    const modal = document.getElementById('cameraModal');
-
-    // Cleanup any previous scanner
-    if (this.cameraScanner) {
-        this.cameraScanner.destroy();
+    displayDecodedResult(decodedText) {
+        this.elements.decodedText.textContent = decodedText.data || decodedText;
+        this.elements.decodeResult.style.display = 'block';
+        this.currentDecodedText = decodedText;
+        this.elements.decodeResult.style.opacity = '0';
+        this.elements.decodeResult.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            this.elements.decodeResult.style.transition = 'all 0.3s ease';
+            this.elements.decodeResult.style.opacity = '1';
+            this.elements.decodeResult.style.transform = 'translateY(0)';
+        }, 100);
     }
 
-    // Initialize new scanner
-    this.cameraScanner = new QrScanner(video, (result) => {
-        this.displayDecodedResult(result);
-        this.showNotification('QR code scanned successfully!', 'success');
-        this.cameraScanner.stop();
-        modal.style.display = 'none';
-    }, {
-        returnDetailedScanResult: true,
-        highlightScanRegion: true,
-        highlightCodeOutline: true
-    });
-
-    try {
-        await this.cameraScanner.start();
-        modal.style.display = 'block';
-    } catch (err) {
-        this.showNotification('Unable to access camera.', 'error');
-        console.error(err);
+    clearUpload() {
+        this.elements.qrUpload.value = '';
+        this.elements.uploadPreview.style.display = 'none';
+        this.elements.uploadArea.querySelector('.upload-content').style.display = 'block';
+        this.elements.decodeResult.style.display = 'none';
+        this.currentDecodedText = null;
     }
 
-    // Close modal if user clicks ❌
-    document.getElementById('closeCamera').addEventListener('click', () => {
+    async copyDecodedText() {
+        if (this.currentDecodedText) {
+            try {
+                await navigator.clipboard.writeText(this.currentDecodedText);
+                this.showNotification('Decoded text copied to clipboard!', 'success');
+            } catch (error) {
+                this.showNotification('Error copying text', 'error');
+            }
+        }
+    }
+
+    useDecodedText() {
+        if (this.currentDecodedText) {
+            this.elements.qrText.value = this.currentDecodedText;
+            this.updateCharCount();
+            this.generateQR();
+            this.showNotification('Text loaded into generator!', 'success');
+            this.elements.qrText.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    toggleUploadMenu() {
+        const menu = document.getElementById('uploadMenu');
+        const isVisible = menu.style.display === 'block';
+        menu.style.display = isVisible ? 'none' : 'block';
+        document.addEventListener('click', () => {
+            menu.style.display = 'none';
+        }, { once: true });
+    }
+
+    async startCameraScan() {
+        const video = document.getElementById('qrVideo');
+        const modal = document.getElementById('cameraModal');
         if (this.cameraScanner) {
-            this.cameraScanner.stop();
+            this.cameraScanner.destroy();
         }
-        modal.style.display = 'none';
-    }, { once: true });
-}
+        this.cameraScanner = new QrScanner(video, (result) => {
+            this.displayDecodedResult(result);
+            this.showNotification('QR code scanned successfully!', 'success');
+            this.cameraScanner.stop();
+            modal.style.display = 'none';
+        }, {
+            returnDetailedScanResult: true,
+            highlightScanRegion: true,
+            highlightCodeOutline: true
+        });
+
+        try {
+            await this.cameraScanner.start();
+            modal.style.display = 'block';
+        } catch (err) {
+            this.showNotification('Unable to access camera.', 'error');
+            console.error(err);
+        }
+        document.getElementById('closeCamera').addEventListener('click', () => {
+            if (this.cameraScanner) {
+                this.cameraScanner.stop();
+            }
+            modal.style.display = 'none';
+        }, { once: true });
+    }
 
 }
 
@@ -674,9 +602,7 @@ document.addEventListener('DOMContentLoaded', () => {
     new QRGenerator();
 });
 
-// Add some utility functions for enhanced UX
 document.addEventListener('keydown', (e) => {
-    // Escape key closes modals
     if (e.key === 'Escape') {
         const openModal = document.querySelector('.modal[style*="block"]');
         if (openModal) {
@@ -686,7 +612,7 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// Add smooth scrolling for any anchor links
+// Smooth scrolling for any anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
@@ -700,10 +626,9 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Add page visibility handling
+// Page visibility handling
 document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
-        // Refresh animations when page becomes visible
         const shapes = document.querySelectorAll('.shape');
         shapes.forEach(shape => {
             shape.style.animation = 'none';

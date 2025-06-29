@@ -223,7 +223,6 @@ body {
     animation: slideInUp 0.6s ease-out 0.2s both;
 }
 
-/* Stack decoder section above input section on first column */
 .main-content > div:first-child {
     display: flex;
     flex-direction: column;
