@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan-R</title>
+    <link rel="icon" type="image/png" href="favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="favicon/favicon.svg" />
+    <link rel="shortcut icon" href="favicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Scan-R" />
+    <link rel="manifest" href="favicon/site.webmanifest" />
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<script type="module">
+    import QrScanner from './qr-scanner.min.js';
+    window.QrScanner = QrScanner; // expose to global for use in script.js
+</script>
+</head>
+<body>
+    <!-- Background Animation -->
+    <div class="bg-animation">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+            <div class="shape shape-5"></div>
+        </div>
+    </div>
+
+    <!-- Theme Toggle -->
+    <div class="theme-toggle">
+        <button id="themeBtn" class="theme-btn">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-qrcode"></i>
+                <h1>
+                    <img src="S.png" alt="S" style="height: 2.5rem; transform: translateY(5px); margin-right: 4px;">can-R - QR Generator Pro
+                </h1>
+            </div>
+            <p class="subtitle">Create stunning QR codes instantly</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Input Section -->
+            <div>
+            <div class="input-section">
+                <div class="form-group">
+                    <label for="qrtext">
+                        <i class="fas fa-edit"></i>
+                        Enter your text or URL
+                    </label>
+                    <textarea 
+                        id="qrtext" 
+                        placeholder="Type your message, URL, or any text here..."
+                        maxlength="1000"
+                    ></textarea>
+                    <div class="char-counter">
+                        <span id="charCount">0</span>/1000
+                    </div>
+                </div>
+
+                <div class="options-grid">
+                    <div class="form-group">
+                        <label for="size">
+                            <i class="fas fa-expand-arrows-alt"></i>
+                            Size
+                        </label>
+                        <select id="size">
+                            <option value="128">Small (128px)</option>
+                            <option value="200">Medium (200px)</option>
+                            <option value="256" selected>Large (256px)</option>
+                            <option value="300">Extra Large (300px)</option>
+                            <option value="400">Huge (400px)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="errorLevel">
+                            <i class="fas fa-shield-alt"></i>
+                            Error Correction
+                        </label>
+                        <select id="errorLevel">
+                            <option value="L">Low (~7%)</option>
+                            <option value="M" selected>Medium (~15%)</option>
+                            <option value="Q">Quartile (~25%)</option>
+                            <option value="H">High (~30%)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="color-section">
+                    <div class="color-group">
+                        <label for="fgColor">
+                            <i class="fas fa-palette"></i>
+                            Foreground Color
+                        </label>
+                        <input type="color" id="fgColor" value="#000000">
+                    </div>
+                    <div class="color-group">
+                        <label for="bgColor">
+                            <i class="fas fa-fill-drip"></i>
+                            Background Color
+                        </label>
+                        <input type="color" id="bgColor" value="#ffffff">
+                    </div>
+                </div>
+
+                <button id="generateBtn" class="generate-btn">
+                    <i class="fas fa-magic"></i>
+                    Generate QR Code
+                    <div class="btn-shimmer"></div>
+                </button>
+            </div>
+
+            <!-- QR Decoder Section -->
+            <div class="decoder-section">
+                <h3><i class="fas fa-search"></i> Decode QR Code</h3>
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-content">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Drop QR image here or click to upload</p>
+                        <input type="file" id="qrUpload" accept="image/*" style="display: none;">
+                    </div>
+                    <div class="upload-menu" id="uploadMenu" style="display: none;">
+                    <button id="cameraOption"><i class="fas fa-camera"></i> Use Camera</button>
+                    <button id="uploadOption"><i class="fas fa-file-upload"></i> Upload Image</button>
+                    </div>
+                    <div class="upload-preview" id="uploadPreview" style="display: none;">
+                        <img id="previewImage" style="max-width: 200px; border-radius: 8px;">
+                        <button class="clear-btn" id="clearUpload"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                <div class="decode-result" id="decodeResult" style="display: none;">
+                    <h4><i class="fas fa-check-circle"></i> Decoded Content:</h4>
+                    <div class="decoded-text" id="decodedText"></div>
+                    <div class="decode-actions">
+                        <button class="action-btn copy-btn" id="copyDecodedBtn">
+                            <i class="fas fa-copy"></i> Copy Text
+                        </button>
+                        <button class="action-btn" id="useDecodedBtn" style="background: var(--primary-gradient);">
+                            <i class="fas fa-arrow-right"></i> Use in Generator
+                        </button>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+            <!-- Output Section -->
+            <div class="output-section">
+                <div class="qr-container">
+                    <div id="qrResult" class="qr-result">
+                        <div class="placeholder">
+                            <i class="fas fa-qrcode"></i>
+                            <p>Your QR code will appear here</p>
+                        </div>
+                    </div>
+                    
+                    <div class="qr-actions" id="qrActions" style="display: none;">
+                        <button id="downloadBtn" class="action-btn download-btn">
+                            <i class="fas fa-download"></i>
+                            Download
+                        </button>
+                        <button id="copyBtn" class="action-btn copy-btn">
+                            <i class="fas fa-copy"></i>
+                            Copy to Clipboard
+                        </button>
+                        <button id="shareBtn" class="action-btn share-btn">
+                            <i class="fas fa-share-alt"></i>
+                            Share
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Templates -->
+                <div class="templates-section">
+                    <h3><i class="fas fa-star"></i> Quick Templates</h3>
+                    <div class="templates-grid">
+                        <button class="template-btn" data-template="wifi">
+                            <i class="fas fa-wifi"></i>
+                            WiFi
+                        </button>
+                        <button class="template-btn" data-template="email">
+                            <i class="fas fa-envelope"></i>
+                            Email
+                        </button>
+                        <button class="template-btn" data-template="phone">
+                            <i class="fas fa-phone"></i>
+                            Phone
+                        </button>
+                        <button class="template-btn" data-template="sms">
+                            <i class="fas fa-sms"></i>
+                            SMS
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <div class="developer-credit">
+            <a href="https://eccentriccoder01.github.io/Me" target="_blank" class="explorer-signature" title="Visit My World">
+                Developed by <span class="eccentric">Eccentric Explorer</span>
+            </a>
+        </div>
+
+    <!-- Template Modals -->
+    <div id="wifiModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3><i class="fas fa-wifi"></i> WiFi QR Code</h3>
+            <div class="form-group">
+                <label>Network Name (SSID)</label>
+                <input type="text" id="wifiSSID" placeholder="Enter network name">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="wifiPassword" placeholder="Enter password">
+            </div>
+            <div class="form-group">
+                <label>Security Type</label>
+                <select id="wifiSecurity">
+                    <option value="WPA">WPA/WPA2</option>
+                    <option value="WEP">WEP</option>
+                    <option value="nopass">Open</option>
+                </select>
+            </div>
+            <button id="createWifiQR" class="modal-btn">Create WiFi QR</button>
+        </div>
+    </div>
+
+    <div id="emailModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3><i class="fas fa-envelope"></i> Email QR Code</h3>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="emailAddress" placeholder="recipient@example.com">
+            </div>
+            <div class="form-group">
+                <label>Subject</label>
+                <input type="text" id="emailSubject" placeholder="Email subject">
+            </div>
+            <div class="form-group">
+                <label>Message</label>
+                <textarea id="emailBody" placeholder="Email message"></textarea>
+            </div>
+            <button id="createEmailQR" class="modal-btn">Create Email QR</button>
+        </div>
+    </div>
+
+<div id="cameraModal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="closeCamera">&times;</span>
+    <h3><i class="fas fa-video"></i> Scanning from Camera...</h3>
+    <video id="qrVideo" muted autoplay playsinline style="width: 100%; border-radius: 8px;"></video>
+  </div>
+</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
