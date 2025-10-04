@@ -1,42 +1,42 @@
 /* CSS Variables for Light Theme */
 :root {
-    --primary-gradient: linear-gradient(135deg, rgba(61, 84, 0, 1.000) 0.000%, rgba(78, 110, 0, 1.000) 35.000%, rgba(96, 137, 0, 1.000) 60.000%, rgb(107, 152, 1) 80.000%, rgb(115, 168, 1) 100.000%);
-    --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --primary-gradient: linear-gradient(135deg, #6cbf84 0%, #4b9e72 100%);
+    --secondary-gradient: linear-gradient(135deg, #b993d6 0%, #8ca6db 100%);
+    --accent-gradient: linear-gradient(135deg, #5ac8fa 0%, #4facfe 100%);
     --success-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
 
-    --bg-primary: linear-gradient(314deg, #4c823f 0%, #3ffd3f 74%);
-    --bg-secondary: #d6ffcd;
-    --bg-tertiary: #ecfdf5;
-    --bg-glass: rgba(255, 255, 255, 0.25);
-    
-    --text-primary: rgb(50, 69, 1);
-    --text-secondary: rgba(78, 110, 0, 1.000);
-    --text-light: rgba(113, 163, 0, 1.000);
-    
-    --border-color: rgba(255, 255, 255, 0.2);
-    --shadow-light: 0 4px 6px rgba(0, 0, 0, 0.05);
-    --shadow-medium: 0 10px 25px rgba(0, 0, 0, 0.1);
-    --shadow-heavy: 0 20px 40px rgba(0, 0, 0, 0.15);
-    
+    --bg-primary: linear-gradient(314deg, #e8f5e9 0%, #f1f8f6 100%);
+    --bg-secondary: #f7fcf9;
+    --bg-tertiary: #ffffff;
+    --bg-glass: rgba(255, 255, 255, 0.3);
+
+    --text-primary: #2e3a2f;
+    --text-secondary: #607c67;
+    --text-light: #93b39b;
+
+    --border-color: rgba(0, 0, 0, 0.08);
+    --shadow-light: 0 2px 4px rgba(0, 0, 0, 0.04);
+    --shadow-medium: 0 8px 20px rgba(0, 0, 0, 0.08);
+    --shadow-heavy: 0 16px 30px rgba(0, 0, 0, 0.12);
+
     --border-radius: 12px;
     --border-radius-lg: 20px;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Dark Theme Variables */
 [data-theme="dark"] {
-    --bg-primary: #0f2a10;
-    --bg-secondary: #233b1e;
-    --bg-tertiary: #365533;
-    --bg-glass: rgba(0, 0, 0, 0.25);
-    
-    --text-primary: #f8fafc;
-    --text-secondary: #cbd5e1;
-    --text-light: #648b66;
-    
+    --bg-primary: #121a14;
+    --bg-secondary: #1f2d23;
+    --bg-tertiary: #2a3b2d;
+    --bg-glass: rgba(0, 0, 0, 0.3);
+
+    --text-primary: #eafbea;
+    --text-secondary: #b3d9b2;
+    --text-light: #6ea76e;
+
     --border-color: rgba(255, 255, 255, 0.1);
 }
+
 
 /* Reset and Base Styles */
 * {
