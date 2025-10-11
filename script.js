@@ -92,7 +92,7 @@ class QRGenerator {
         // Real-time preview (debounced)
         this.debounceTimer = null;
         ['input', 'change'].forEach(event => {
-            this.elements.qrText.addEventListener(event, () => this.debounceGenerate());
+            this.elements.qrText.addEventListener('input', () => this.updateCharCount());
             this.elements.size.addEventListener(event, () => this.debounceGenerate());
             this.elements.errorLevel.addEventListener(event, () => this.debounceGenerate());
             this.elements.fgColor.addEventListener(event, () => this.debounceGenerate());
