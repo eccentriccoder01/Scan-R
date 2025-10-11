@@ -11,6 +11,7 @@ class QRGenerator {
             size: document.getElementById('size'),
             errorLevel: document.getElementById('errorLevel'),
             fgColor: document.getElementById('fgColor'),
+            fgColor2: document.getElementById('fgColor2'),
             bgColor: document.getElementById('bgColor'),
             generateBtn: document.getElementById('generateBtn'),
             qrResult: document.getElementById('qrResult'),
@@ -30,14 +31,65 @@ class QRGenerator {
             copyDecodedBtn: document.getElementById('copyDecodedBtn'),
             useDecodedBtn: document.getElementById('useDecodedBtn'),
             cameraOption: document.getElementById('cameraOption'),
-            uploadOption: document.getElementById('uploadOption')
+            uploadOption: document.getElementById('uploadOption'),
+            moduleShape: document.getElementById('moduleShape'),
+            cornerStyle: document.getElementById('cornerStyle'),
+            useGradient: document.getElementById('useGradient'),
+            addLogo: document.getElementById('addLogo'),
+            logoFile: document.getElementById('logoFile'),
+            logoPreview: document.getElementById('logoPreview'),
+            logoImg: document.getElementById('logoImg'),
+            removeLogo: document.getElementById('removeLogo')
         };
 
         this.currentQRCode = null;
         this.currentCanvas = null;
         this.cameraScanner = null;
+        this.currentPreset = 'classic';
+        this.logoImage = null;
+        
+        // QR Style presets
+        this.stylePresets = {
+            classic: {
+                moduleShape: 'square',
+                cornerStyle: 'square',
+                useGradient: false,
+                colors: { fg: '#000000', bg: '#ffffff' }
+            },
+            rounded: {
+                moduleShape: 'rounded',
+                cornerStyle: 'rounded',
+                useGradient: false,
+                colors: { fg: '#1f2937', bg: '#f9fafb' }
+            },
+            dots: {
+                moduleShape: 'circle',
+                cornerStyle: 'circle',
+                useGradient: false,
+                colors: { fg: '#374151', bg: '#ffffff' }
+            },
+            neon: {
+                moduleShape: 'rounded',
+                cornerStyle: 'rounded',
+                useGradient: true,
+                colors: { fg: '#ff006e', fg2: '#8338ec', bg: '#000000' }
+            },
+            minimal: {
+                moduleShape: 'rounded',
+                cornerStyle: 'rounded',
+                useGradient: true,
+                colors: { fg: '#6366f1', fg2: '#8b5cf6', bg: '#ffffff' }
+            },
+            retro: {
+                moduleShape: 'diamond',
+                cornerStyle: 'square',
+                useGradient: true,
+                colors: { fg: '#f59e0b', fg2: '#ef4444', bg: '#fef3c7' }
+            }
+        };
         
         this.updateCharCount();
+        this.setupStyleEvents();
     }
 
     bindEvents() {
@@ -96,9 +148,108 @@ class QRGenerator {
             this.elements.size.addEventListener(event, () => this.debounceGenerate());
             this.elements.errorLevel.addEventListener(event, () => this.debounceGenerate());
             this.elements.fgColor.addEventListener(event, () => this.debounceGenerate());
+            this.elements.fgColor2.addEventListener(event, () => this.debounceGenerate());
             this.elements.bgColor.addEventListener(event, () => this.debounceGenerate());
+            this.elements.moduleShape.addEventListener(event, () => this.debounceGenerate());
+            this.elements.cornerStyle.addEventListener(event, () => this.debounceGenerate());
         });
     }
+
+    setupStyleEvents() {
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const preset = e.currentTarget.dataset.preset;
+                this.applyStylePreset(preset);
+            });
+        });
+
+        this.elements.useGradient.addEventListener('change', () => {
+            document.getElementById('gradientColor').style.display = 
+                this.elements.useGradient.checked ? 'block' : 'none';
+            this.debounceGenerate();
+        });
+
+        this.elements.addLogo.addEventListener('change', () => {
+            document.getElementById('logoUpload').style.display = 
+                this.elements.addLogo.checked ? 'block' : 'none';
+        });
+
+        this.elements.logoFile.addEventListener('change', (e) => this.handleLogoUpload(e));
+        this.elements.removeLogo.addEventListener('click', () => this.removeLogo());
+
+        document.getElementById('toggleAdvanced').addEventListener('click', () => {
+            this.toggleAdvancedOptions();
+        });
+    }
+
+    applyStylePreset(presetName) {
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`[data-preset="${presetName}"]`).classList.add('active');
+
+        const preset = this.stylePresets[presetName];
+        this.currentPreset = presetName;
+
+        this.elements.moduleShape.value = preset.moduleShape;
+        this.elements.cornerStyle.value = preset.cornerStyle;
+        this.elements.useGradient.checked = preset.useGradient;
+        this.elements.fgColor.value = preset.colors.fg;
+        this.elements.bgColor.value = preset.colors.bg;
+
+        if (preset.colors.fg2) {
+            this.elements.fgColor2.value = preset.colors.fg2;
+        }
+
+        document.getElementById('gradientColor').style.display = 
+            preset.useGradient ? 'block' : 'none';
+
+        this.showNotification(`Applied ${presetName.charAt(0).toUpperCase() + presetName.slice(1)} theme!`, 'success');
+
+        this.debounceGenerate();
+    }
+
+    handleLogoUpload(event) {
+        const file = event.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    this.logoImage = img;
+                    this.elements.logoImg.src = e.target.result;
+                    this.elements.logoPreview.style.display = 'flex';
+                    this.debounceGenerate();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    removeLogo() {
+        this.logoImage = null;
+        this.elements.logoFile.value = '';
+        this.elements.logoPreview.style.display = 'none';
+        this.debounceGenerate();
+    }
+
+    toggleAdvancedOptions() {
+        const advancedOptions = document.getElementById('advancedOptions');
+        const toggleBtn = document.getElementById('toggleAdvanced');
+        const arrow = toggleBtn.querySelector('.arrow');
+        
+        if (advancedOptions.style.display === 'none') {
+            advancedOptions.style.display = 'block';
+            arrow.style.transform = 'rotate(180deg)';
+            toggleBtn.classList.add('active');
+        } else {
+            advancedOptions.style.display = 'none';
+            arrow.style.transform = 'rotate(0deg)';
+            toggleBtn.classList.remove('active');
+        }
+    }
+
 
     debounceGenerate() {
         clearTimeout(this.debounceTimer);
@@ -136,29 +287,58 @@ class QRGenerator {
             const qr = qrcode(0, this.elements.errorLevel.value);
             qr.addData(text);
             qr.make();
+            
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             const size = parseInt(this.elements.size.value);
             const moduleCount = qr.getModuleCount();
             const cellSize = size / moduleCount;
+            const margin = cellSize * 2;
             
-            canvas.width = size;
-            canvas.height = size;
+            canvas.width = size + margin * 2;
+            canvas.height = size + margin * 2;
 
             ctx.fillStyle = this.elements.bgColor.value;
-            ctx.fillRect(0, 0, size, size);
-            ctx.fillStyle = this.elements.fgColor.value;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const useGradient = this.elements.useGradient.checked;
+            if (useGradient) {
+                const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                gradient.addColorStop(0, this.elements.fgColor.value);
+                gradient.addColorStop(1, this.elements.fgColor2.value);
+                ctx.fillStyle = gradient;
+            } else {
+                ctx.fillStyle = this.elements.fgColor.value;
+            }
+
+            const moduleShape = this.elements.moduleShape.value;
+            const cornerStyle = this.elements.cornerStyle.value;
 
             for (let row = 0; row < moduleCount; row++) {
                 for (let col = 0; col < moduleCount; col++) {
                     if (qr.isDark(row, col)) {
-                        ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+                        const x = col * cellSize + margin;
+                        const y = row * cellSize + margin;
+                        
+                        const isFinderPattern = this.isFinderPattern(row, col, moduleCount);
+                        
+                        if (isFinderPattern) {
+                            this.drawFinderPattern(ctx, x, y, cellSize, cornerStyle);
+                        } else {
+                            this.drawModule(ctx, x, y, cellSize, moduleShape);
+                        }
                     }
                 }
             }
 
+            if (this.elements.addLogo.checked && this.logoImage) {
+                await this.addLogoToQR(ctx, canvas.width, canvas.height);
+            }
+
             this.currentCanvas = canvas;
             this.currentQRCode = text;
+
+            this.addStylishBorder(ctx, canvas.width, canvas.height);
 
             canvas.style.opacity = '0';
             canvas.style.transform = 'scale(0.8)';
@@ -185,6 +365,97 @@ class QRGenerator {
             this.showPlaceholder();
         } finally {
             this.setLoadingState(false);
+        }
+    }
+
+    isFinderPattern(row, col, moduleCount) {
+        return (row < 7 && col < 7) || // Top-left
+               (row < 7 && col >= moduleCount - 7) || // Top-right
+               (row >= moduleCount - 7 && col < 7); // Bottom-left
+    }
+
+    drawModule(ctx, x, y, size, shape) {
+        ctx.save();
+        
+        switch (shape) {
+            case 'rounded':
+                this.drawRoundedRect(ctx, x, y, size, size, size * 0.3);
+                break;
+            case 'circle':
+                ctx.beginPath();
+                ctx.arc(x + size/2, y + size/2, size * 0.4, 0, 2 * Math.PI);
+                ctx.fill();
+                break;
+            case 'diamond':
+                ctx.beginPath();
+                ctx.moveTo(x + size/2, y);
+                ctx.lineTo(x + size, y + size/2);
+                ctx.lineTo(x + size/2, y + size);
+                ctx.lineTo(x, y + size/2);
+                ctx.closePath();
+                ctx.fill();
+                break;
+            default: // square
+                ctx.fillRect(x, y, size, size);
+        }
+        
+        ctx.restore();
+    }
+
+    drawFinderPattern(ctx, x, y, size, style) {
+        this.drawModule(ctx, x, y, size, style === 'leaf' ? 'rounded' : style);
+    }
+
+    drawRoundedRect(ctx, x, y, width, height, radius) {
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + width - radius, y);
+        ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+        ctx.lineTo(x + width, y + height - radius);
+        ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+        ctx.lineTo(x + radius, y + height);
+        ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+        ctx.lineTo(x, y + radius);
+        ctx.quadraticCurveTo(x, y, x + radius, y);
+        ctx.closePath();
+        ctx.fill();
+    }
+
+    async addLogoToQR(ctx, canvasWidth, canvasHeight) {
+        if (!this.logoImage) return;
+        
+        const logoSize = Math.min(canvasWidth, canvasHeight) * 0.2;
+        const logoX = (canvasWidth - logoSize) / 2;
+        const logoY = (canvasHeight - logoSize) / 2;
+        
+        ctx.save();
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(canvasWidth/2, canvasHeight/2, logoSize * 0.6, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
+        ctx.shadowBlur = 10;
+        ctx.shadowOffsetX = 2;
+        ctx.shadowOffsetY = 2;
+        
+        ctx.beginPath();
+        ctx.arc(canvasWidth/2, canvasHeight/2, logoSize * 0.5, 0, 2 * Math.PI);
+        ctx.clip();
+        
+        ctx.drawImage(this.logoImage, logoX, logoY, logoSize, logoSize);
+        ctx.restore();
+    }
+
+    addStylishBorder(ctx, width, height) {
+        if (this.currentPreset === 'neon') {
+            ctx.save();
+            ctx.shadowColor = this.elements.fgColor.value;
+            ctx.shadowBlur = 20;
+            ctx.strokeStyle = this.elements.fgColor.value;
+            ctx.lineWidth = 3;
+            ctx.strokeRect(5, 5, width - 10, height - 10);
+            ctx.restore();
         }
     }
 

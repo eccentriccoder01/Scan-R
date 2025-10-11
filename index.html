@@ -96,20 +96,135 @@
                     </div>
                 </div>
 
-                <div class="color-section">
-                    <div class="color-group">
-                        <label for="fgColor">
-                            <i class="fas fa-palette"></i>
-                            Foreground Color
-                        </label>
-                        <input type="color" id="fgColor" value="#000000">
+                <!-- QR Style Themes Section -->
+                <div class="style-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-magic"></i>
+                        QR Code Styles
+                    </h3>
+                    
+                    <!-- Style Presets -->
+                    <div class="style-presets">
+                        <button class="preset-btn active" data-preset="classic">
+                            <div class="preset-preview classic-preview"></div>
+                            <span>Classic</span>
+                        </button>
+                        <button class="preset-btn" data-preset="rounded">
+                            <div class="preset-preview rounded-preview"></div>
+                            <span>Rounded</span>
+                        </button>
+                        <button class="preset-btn" data-preset="dots">
+                            <div class="preset-preview dots-preview"></div>
+                            <span>Dots</span>
+                        </button>
+                        <button class="preset-btn" data-preset="neon">
+                            <div class="preset-preview neon-preview"></div>
+                            <span>Neon</span>
+                        </button>
+                        <button class="preset-btn" data-preset="minimal">
+                            <div class="preset-preview minimal-preview"></div>
+                            <span>Minimal</span>
+                        </button>
+                        <button class="preset-btn" data-preset="retro">
+                            <div class="preset-preview retro-preview"></div>
+                            <span>Retro</span>
+                        </button>
                     </div>
-                    <div class="color-group">
-                        <label for="bgColor">
-                            <i class="fas fa-fill-drip"></i>
-                            Background Color
-                        </label>
-                        <input type="color" id="bgColor" value="#ffffff">
+
+                    <!-- Advanced Style Options -->
+                    <div class="advanced-toggle">
+                        <button id="toggleAdvanced" class="toggle-btn">
+                            <i class="fas fa-cog"></i> Advanced Options
+                            <i class="fas fa-chevron-down arrow"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="advanced-options" id="advancedOptions" style="display: none;">
+                        <h4><i class="fas fa-cog"></i> Advanced Styling</h4>
+                        
+                        <div class="options-grid">
+                            <div class="form-group">
+                                <label for="moduleShape">
+                                    <i class="fas fa-shapes"></i>
+                                    Module Shape
+                                </label>
+                                <select id="moduleShape">
+                                    <option value="square">Square</option>
+                                    <option value="rounded">Rounded</option>
+                                    <option value="circle">Circle</option>
+                                    <option value="diamond">Diamond</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cornerStyle">
+                                    <i class="fas fa-crop-alt"></i>
+                                    Corner Style
+                                </label>
+                                <select id="cornerStyle">
+                                    <option value="square">Square</option>
+                                    <option value="rounded">Rounded</option>
+                                    <option value="circle">Circle</option>
+                                    <option value="leaf">Leaf</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="gradient-options">
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="useGradient">
+                                    <i class="fas fa-palette"></i>
+                                    Use Gradient Colors
+                                </label>
+                            </div>
+                            
+                            <div class="color-section" id="colorSection">
+                                <div class="color-group">
+                                    <label for="fgColor">
+                                        <i class="fas fa-palette"></i>
+                                        Primary Color
+                                    </label>
+                                    <input type="color" id="fgColor" value="#000000">
+                                </div>
+                                <div class="color-group" id="gradientColor" style="display: none;">
+                                    <label for="fgColor2">
+                                        <i class="fas fa-palette"></i>
+                                        Gradient Color
+                                    </label>
+                                    <input type="color" id="fgColor2" value="#6366f1">
+                                </div>
+                                <div class="color-group">
+                                    <label for="bgColor">
+                                        <i class="fas fa-fill-drip"></i>
+                                        Background Color
+                                    </label>
+                                    <input type="color" id="bgColor" value="#ffffff">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Logo Upload Section -->
+                        <div class="logo-section">
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="addLogo">
+                                    <i class="fas fa-image"></i>
+                                    Add Logo/Brand
+                                </label>
+                            </div>
+                            <div class="logo-upload" id="logoUpload" style="display: none;">
+                                <input type="file" id="logoFile" accept="image/*" style="display: none;">
+                                <button class="upload-logo-btn" onclick="document.getElementById('logoFile').click()">
+                                    <i class="fas fa-upload"></i>
+                                    Upload Logo
+                                </button>
+                                <div class="logo-preview" id="logoPreview" style="display: none;">
+                                    <img id="logoImg" style="max-width: 50px; max-height: 50px; border-radius: 4px;">
+                                    <button class="remove-logo" id="removeLogo">×</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -159,7 +274,8 @@
                     <div id="qrResult" class="qr-result">
                         <div class="placeholder">
                             <i class="fas fa-qrcode"></i>
-                            <p>Your QR code will appear here</p>
+                            <p>Your styled QR code will appear here</p>
+                            <small>Choose a theme above and enter text to generate</small>
                         </div>
                     </div>
                     
