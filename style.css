@@ -1209,3 +1209,60 @@ textarea:focus, select:focus, input:focus {
         align-items: stretch;
     }
 }
+/* FINAL CSS FOR PERFECT CENTERING - Using Flexbox + Minor Nudge */
+#scrollToTopBtn {
+    display: none; /* Hidden by default */
+    position: fixed;
+    bottom: 90px;
+    right: 30px;
+    z-index: 1000;
+    border: none;
+    outline: none;
+    background: var(--primary-gradient);
+    color: white;
+    cursor: pointer;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease-in-out;
+    opacity: 0.9;
+    
+    /* Center the content (the <i> icon) perfectly */
+    display: flex !important; 
+    align-items: center !important; /* Vertical center */
+    justify-content: center !important; /* Horizontal center */
+    
+    padding: 0 !important; /* Important: removes padding that might offset the icon */
+    line-height: 1 !important; /* Ensure line-height doesn't interfere */
+}
+
+/* Target the icon specifically to nudge it if needed */
+#scrollToTopBtn i {
+    font-size: 24px;
+    /* Minor manual adjustment in case Flexbox isn't perfectly aligned due to font rendering */
+    position: relative; 
+    left: -1px; /* Try shifting 1px left. Adjust if needed (e.g., -2px) */
+    top: 1px; /* Try shifting 1px down if needed */
+}
+
+#scrollToTopBtn:hover {
+    opacity: 1;
+    transform: translateY(-5px) scale(1.08);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Responsive adjustment for smaller screens */
+@media (max-width: 768px) {
+    #scrollToTopBtn {
+        right: 15px;
+        bottom: 80px;
+        width: 50px;
+        height: 50px;
+    }
+    #scrollToTopBtn i {
+        font-size: 20px;
+        left: -1px; /* Maintain nudge on mobile */
+        top: 0px; 
+    }
+}
