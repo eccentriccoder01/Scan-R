@@ -909,3 +909,37 @@ document.addEventListener('visibilitychange', () => {
         });
     }
 });
+// In script.js, at the end:
+
+const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+
+function toggleScrollToTopButton() {
+    // Use both documentElement.scrollTop (standard) and document.body.scrollTop (legacy)
+    const currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
+    
+    // HIDE the button if scrolled 200px or less
+    if (currentScroll > 200) { 
+        if (scrollToTopBtn) {
+            scrollToTopBtn.style.display = "block";
+        }
+    } else {
+        if (scrollToTopBtn) {
+            scrollToTopBtn.style.display = "none"; // <-- This is the line that MUST hide it
+        }
+    }
+}
+
+// 1. Attach the scroll listener
+window.addEventListener('scroll', toggleScrollToTopButton);
+
+// 2. Attach the click listener
+if (scrollToTopBtn) {
+    scrollToTopBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+}
+
+// 3. Run the check immediately on load to set the initial state correctly
+document.addEventListener('DOMContentLoaded', () => {
+    toggleScrollToTopButton();
+});
